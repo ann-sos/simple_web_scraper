@@ -2,8 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 
 
-"""This script takes a link to a movie or tv show description and prints scraped title and description to the console.
-It displays "Invalid movie page!" for other websites. Tested for imbd."""
+"""Saves the content of the website to the source.html and notifies about success/failure of the operation. 
+URI is provided via user input."""
 
 
 def get_response(url: str, params: dict = None) -> requests.Response:
@@ -28,10 +28,18 @@ def extract_title(response: requests.Response):
         return fail_str
 
 
+def save_content(res: requests.Response):
+    """Saves the page website data to source.html"""
+    with open("source.html", "wb") as f:
+        f.write(res.content)
+
+
 if __name__ == "__main__":
     user_url = input("Input the URL:\n")
-    if "title" in user_url:
-        r = get_response(user_url)
-        print(extract_title(r))
+    r = get_response(user_url)
+    if r:
+        print(r.status_code)
+        save_content(r)
+        print("Content saved.")
     else:
-        print("Invalid movie page!")
+        print(f"The URL returned {r.status_code}!")
